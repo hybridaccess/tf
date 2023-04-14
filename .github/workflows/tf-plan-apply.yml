@@ -23,14 +23,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          path: ci/terraform
+          path: release
       - name: Terraform Plan
         if: ${{ github.event_name == 'pull_request' }}
         id: plan
         uses: dflook/terraform-plan@v1.34.0
         with:
           add_github_comment: changes-only
-          path: terraform
+          path: ci/terraform
           label: tf-plan
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
