@@ -47,6 +47,7 @@ jobs:
           add_github_comment: changes-only
           path: release/ci/terraform
           label: tf-plan
+          backend-config: local.tfstate
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         id: aply
