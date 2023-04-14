@@ -29,6 +29,11 @@ jobs:
           fetch-depth: 0
           path: release
       - name: Terraform Plan
+        run: |
+          set -x
+          terraform init
+          terraform plan
+      - name: Terraform Plan
         if: ${{ github.event_name == 'pull_request' }}
         id: plan
         uses: dflook/terraform-plan@v1.34.0
