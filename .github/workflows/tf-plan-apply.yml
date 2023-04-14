@@ -30,7 +30,7 @@ jobs:
         uses: dflook/terraform-plan@v1.34.0
         with:
           add_github_comment: changes-only
-          path: ci/terraform
+          path: release/ci/terraform
           label: tf-plan
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
@@ -38,5 +38,5 @@ jobs:
         uses: dflook/terraform-apply@v1.34.0
         with:
           add_github_comment: changes-only
-          path: ci/terraform
+          path: release/ci/terraform
           label: tf-plan
