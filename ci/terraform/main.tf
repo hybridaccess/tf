@@ -16,5 +16,5 @@ provider "azurerm" {
 
 resource "azurerm_resource_group" "this" {
   location = "northeurope"
-  name     = "hax-poc-rg"
+  name     = "hax-rg-01"
 }
