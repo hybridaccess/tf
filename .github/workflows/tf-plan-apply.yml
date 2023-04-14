@@ -34,7 +34,7 @@ jobs:
           label: tf-plan
       - name: Terraform Apply
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        id: plan
+        id: aply
         uses: dflook/terraform-apply@v1.34.0
         with:
           add_github_comment: changes-only
