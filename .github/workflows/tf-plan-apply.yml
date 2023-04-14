@@ -1,0 +1,58 @@
+name: Deploy Terraform
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/*.yml'
+      - 'ci/terraform/*'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/*.yml'
+      - 'ci/terraform/*'
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  terraform-plan:
+    name: TF plan-apply
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          path: release
+      - name: Terraform Pre-Import Plan
+        run: |
+          set -x
+          terraform -chdir=release/ci/terraform init
+          terraform -chdir=release/ci/terraform plan
+      - name: Terraform Import
+        run: |
+          set -x
+          terraform -chdir=release/ci/terraform import -state=local.tfstate azurerm_resource_group.this /subscriptions/02b44a0d-f98e-407e-b0c1-7d394305857e/resourceGroups/hax-rg-01
+          terraform -chdir=release/ci/terraform plan -state=local.tfstate          
+
+      - name: Terraform Plan
+        if: ${{ github.event_name == 'pull_request' }}
+        id: plan
+        uses: dflook/terraform-plan@v1.34.0
+        with:
+          add_github_comment: changes-only
+          path: release/ci/terraform
+          label: tf-plan
+          backend_config: "path=local.tfstate"
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        id: aply
+        uses: dflook/terraform-apply@v1.34.0
+        with:
+          add_github_comment: changes-only
+          path: release/ci/terraform
+          label: tf-plan
